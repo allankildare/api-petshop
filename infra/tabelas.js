@@ -6,7 +6,7 @@ class Tabelas {
     }
 
     criarAtendimentos() {
-        const sql = `CREATE TABLE Atendimentos (
+        const sql = `CREATE TABLE IF NOT EXISTS Atendimentos (
             id int NOT NULl AUTO_INCREMENT,
             cliente varchar(50) NOT NULL,
             pet varchar(20),

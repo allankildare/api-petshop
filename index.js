@@ -1,4 +1,14 @@
-const customExpress = require('./config/customExpress')
+const customExpress = require("./config/customExpress")
 const port = 8080
-const app = customExpress()
-app.listen(port, () => console.log(`Servidor rodando na porta http://localhost:${port}`))
+const conexao = require("./infra/conexao")
+
+conexao.connect((error) => {
+  if (error) console.log(error);
+  else {
+    console.log("Conectado com sucesso!!!")
+    const app = customExpress()
+    app.listen(port, () =>
+      console.log(`Servidor rodando na porta http://localhost:${port}`)
+    )
+  }
+})

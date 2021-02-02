@@ -1,18 +1,44 @@
-const moment = require("moment")
-const conexao = require('../infra/conexao')
+const moment = require("moment");
+const conexao = require("../infra/conexao");
 
 class Atendimento {
-    adiciona(atendimento, res) {
-        const dataCriacao = moment().format('YYYY-MM-DD HH:MM:SS')
-        const data = moment(atendimento.data, 'DD/MM/YYYY').format('YYYY-MM-DD HH:MM:SS')
-        const atendimentoDatado = {...atendimento, dataCriacao, data}
-        const sql = 'INSERT INTO Atendimentos SET ?'
+  adiciona(atendimento, res) {
+    const dataCriacao = moment().format("YYYY-MM-DD HH:MM:SS");
+    const data = moment(atendimento.data, "DD/MM/YYYY").format(
+      "YYYY-MM-DD HH:MM:SS"
+    );
 
-        conexao.query(sql, atendimentoDatado, (error, resultados) => {
-            if(error) res.status(400).json(error)
-            else res.status(201).json(resultados)
-        })
+    const dataEhValida = moment(data).isSameOrAfter(dataCriacao);
+    const clienteEhValido = atendimento.cliente.length >= 5;
+
+    const validacoes = [
+      {
+        nome: "data",
+        valido: dataEhValida,
+        mensagem: "Data deve ser posterior ou a mesma da data atual",
+      },
+      {
+        nome: "cliente",
+        valido: clienteEhValido,
+        mensagem: "Cliente deve ter pelo menos cinco caracteres",
+      },
+    ];
+
+    const erros = validacoes.filter((campo) => !campo.valido);
+    const existemErros = erros.length;
+    if (existemErros) {
+      res.status(400).json(erros);
+    } else {
+      const atendimentoDatado = { ...atendimento, dataCriacao, data };
+
+      const sql = "INSERT INTO Atendimentos SET ?";
+
+      conexao.query(sql, atendimentoDatado, (error, resultados) => {
+        if (error) res.status(400).json(error);
+        else res.status(201).json(resultados);
+      });
     }
+  }
 }
 
-module.exports = new Atendimento
+module.exports = new Atendimento();

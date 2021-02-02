@@ -3,12 +3,12 @@ const conexao = require("../infra/conexao");
 
 class Atendimento {
   adiciona(atendimento, res) {
-    const dataCriacao = moment().format("YYYY-MM-DD HH:MM:SS");
+    const dataCriacao = moment().format("YYYY-MM-DD HH:MM:SS")
     const data = moment(atendimento.data, "DD/MM/YYYY").format(
       "YYYY-MM-DD HH:MM:SS"
     );
 
-    const dataEhValida = moment(data).isSameOrAfter(dataCriacao);
+    const dataEhValida = moment(dataCriacao).isSameOrAfter(data);
     const clienteEhValido = atendimento.cliente.length >= 5;
 
     const validacoes = [
@@ -35,7 +35,7 @@ class Atendimento {
 
       conexao.query(sql, atendimentoDatado, (error, resultados) => {
         if (error) res.status(400).json(error);
-        else res.status(201).json(resultados);
+        else res.status(201).json(atendimento);
       });
     }
   }
@@ -56,6 +56,28 @@ class Atendimento {
         const atendimento = resultados[0]  
         if(error) res.status(400).json(error)
         else res.status(200).json(atendimento)
+      })
+  }
+
+  altera(id, valores, res) {
+    if(valores.data) {
+        valores.data = moment(valores.data, "DD/MM/YYYY").format("YYYY-MM-DD HH:MM:SS")
+    }
+
+    const sql = 'UPDATE Atendimentos SET ? WHERE id=?'
+
+    conexao.query(sql, [valores, id], (error, resultados) => {
+        if(error) res.status(400).json(error)
+        else res.status(200).json({...valores, id})
+    })
+  }
+
+  deleta(id, res) {
+      const sql = 'DELETE FROM Atendimentos WHERE id=?'
+
+      conexao.query(sql, id, (error, resultados) => {
+          if(error) res.status(400).json(error)
+          else res.status(200).json({id})
       })
   }
 }

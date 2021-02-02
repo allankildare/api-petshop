@@ -11,6 +11,8 @@ class Tabelas {
             cliente varchar(50) NOT NULL,
             pet varchar(20),
             servico varchar(20) NOT NULL,
+            data datetime NULL,
+            dataCriacao datetime NULL,
             status varchar(20) NOT NULL,
             observacoes text, PRIMARY KEY(id))`
 
